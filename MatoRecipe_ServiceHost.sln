@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MatoRecipe_Generator", "MatoRecipe_ServiceHost\MatoRecipe_Generator.csproj", "{7F5B7492-0AE1-4352-ACE5-CC64272145CA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MatoRecipe_Server", "MatoRecipe_Server\MatoRecipe_Server.csproj", "{422260CA-3EFC-4087-867D-5B2CD0252CAF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MatoRecipe_Server.Tests", "MatoRecipe_Server.Tests\MatoRecipe_Server.Tests.csproj", "{07E4FDE7-8D18-429E-9FDF-BE79BC19C218}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MatoRecipe_Model", "MatoRecipe_Model\MatoRecipe_Model.csproj", "{32E4EAD4-C7AA-47A7-89DD-169E35B85488}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7F5B7492-0AE1-4352-ACE5-CC64272145CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F5B7492-0AE1-4352-ACE5-CC64272145CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F5B7492-0AE1-4352-ACE5-CC64272145CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F5B7492-0AE1-4352-ACE5-CC64272145CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{422260CA-3EFC-4087-867D-5B2CD0252CAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{422260CA-3EFC-4087-867D-5B2CD0252CAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{422260CA-3EFC-4087-867D-5B2CD0252CAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{422260CA-3EFC-4087-867D-5B2CD0252CAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07E4FDE7-8D18-429E-9FDF-BE79BC19C218}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07E4FDE7-8D18-429E-9FDF-BE79BC19C218}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07E4FDE7-8D18-429E-9FDF-BE79BC19C218}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07E4FDE7-8D18-429E-9FDF-BE79BC19C218}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32E4EAD4-C7AA-47A7-89DD-169E35B85488}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32E4EAD4-C7AA-47A7-89DD-169E35B85488}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32E4EAD4-C7AA-47A7-89DD-169E35B85488}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32E4EAD4-C7AA-47A7-89DD-169E35B85488}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
