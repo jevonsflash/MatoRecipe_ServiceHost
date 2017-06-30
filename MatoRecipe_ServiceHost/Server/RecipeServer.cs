@@ -23,16 +23,30 @@ namespace MatoRecipe_Generator.Server
             return result;
         }
 
-        public async Task<CookListEntity> GetCookList(string parameter)
+        public async Task<CookListEntity> GetCookListByPage(string parameter)
         {
             var result = new CookListEntity();
             string url = StaticURLHelper.CookList;
             Dictionary<string, string> dic = new Dictionary<string, string>();
-            dic.Add("name", parameter);
+            dic.Add("page", parameter);
             var jsonstr = await GetJSON(url, dic);
             result = JsonConvert.DeserializeObject<CookListEntity>(jsonstr);
             return result;
         }
+
+
+        public async Task<CookListEntity> GetCookListById(string page, string id)
+        {
+            var result = new CookListEntity();
+            string url = StaticURLHelper.CookList;
+            Dictionary<string, string> dic = new Dictionary<string, string>();
+            dic.Add("page", page);
+            dic.Add("id", id);
+            var jsonstr = await GetJSON(url, dic);
+            result = JsonConvert.DeserializeObject<CookListEntity>(jsonstr);
+            return result;
+        }
+
 
         public async Task<CookDetailEntity> GetCookDetail(string parameter)
         {
@@ -55,6 +69,16 @@ namespace MatoRecipe_Generator.Server
             return result;
         }
 
+        public async Task<CookClassifyEntity> GetCookClassify(string id)
+        {
+            var result = new CookClassifyEntity();
+            string url = StaticURLHelper.CookClassify;
+            Dictionary<string, string> dic = new Dictionary<string, string>();
+            dic.Add("id", id);
+            var jsonstr = await GetJSON(url, dic);
+            result = JsonConvert.DeserializeObject<CookClassifyEntity>(jsonstr);
+            return result;
+        }
 
 
         public async Task<FoodDetailEntity> GetFoodSearch(string parameter)

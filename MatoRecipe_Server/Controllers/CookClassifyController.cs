@@ -9,7 +9,7 @@ using System.Web.Http;
 
 namespace MatoRecipe_Server.Controllers
 {
-    public class MatoRecipeController : ApiController
+    public class CookClassifyController : ApiController
     {
         [HttpGet]
         public CookClassifyEntity GetCookClassify()

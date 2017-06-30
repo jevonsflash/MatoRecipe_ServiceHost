@@ -49,7 +49,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class1.cs" />
-    <Compile Include="DataModel\CookClassifyData.cs" />
+    <Compile Include="DataModel\cook_classify.cs" />
+    <Compile Include="DataModel\cook_show_item.cs" />
     <Compile Include="Model\CookClassifyEntity.cs" />
     <Compile Include="Model\CookDetailEntity.cs" />
     <Compile Include="Model\CookShowItemEntity.cs" />
