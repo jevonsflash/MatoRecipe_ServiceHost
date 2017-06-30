@@ -9,15 +9,15 @@ using System.Threading.Tasks;
 namespace MatoRecipe_Server.Controllers.Tests
 {
     [TestClass()]
-    public class MatoRecipeControllerTests
+    public class CookListControllerTests
     {
         [TestMethod()]
-        public void GetCookClassifyTest()
+        public void GetCookListTest()
         {
-            CookClassifyController c = new CookClassifyController();
-            var result = c.GetCookClassify();
-
+            CookListController c = new CookListController();
+            var result = c.GetCookList(1, 20);
             Assert.IsNotNull(result);
+            
         }
     }
 }

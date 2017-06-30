@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using MatoRecipe_Model.Model;
 
@@ -61,7 +62,20 @@ namespace MatoRecipe_Generator.Helper
         {
             Uri uri = new Uri(url);
             HttpClient httpClient = new HttpClient();
-            string result = await httpClient.GetStringAsync(uri).ConfigureAwait(false);
+            var taskresult = httpClient.GetStringAsync(uri);
+            var result = await taskresult;
+            int i = 0;
+            while (i < 300 && !taskresult.IsCompleted)
+            {
+                Thread.Sleep(1);
+                i++;
+            }
+            if (!taskresult.IsCompleted)
+            {
+                httpClient.CancelPendingRequests();
+                Console.WriteLine("请求{0}超时，正在退出网络请求", url);
+            }
+            taskresult.Wait();
             return result;
         }
 
