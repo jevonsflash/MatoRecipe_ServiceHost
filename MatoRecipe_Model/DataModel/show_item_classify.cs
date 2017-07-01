@@ -14,19 +14,16 @@ using Dos.ORM;
 namespace MatoRecipe_Model.Model
 {
     /// <summary>
-    /// 实体类cook_classify。(属性说明自动提取数据库字段的描述信息)
+    /// 实体类show_item_classify。(属性说明自动提取数据库字段的描述信息)
     /// </summary>
-    [Table("cook_classify")]
+    [Table("show_item_classify")]
     [Serializable]
-    public partial class cook_classify : Entity
+    public partial class show_item_classify : Entity
     {
         #region Model
 		private int _Id;
-		private int? _cook_class;
-		private string _description;
-		private string _name;
-		private int? _seq;
-		private string _title;
+		private int _classify_id;
+		private int _item_id;
 		private DateTime _create_time;
 
 		/// <summary>
@@ -45,66 +42,27 @@ namespace MatoRecipe_Model.Model
 		/// <summary>
 		/// 
 		/// </summary>
-		[Field("cook_class")]
-		public int? cook_class
+		[Field("classify_id")]
+		public int classify_id
 		{
-			get{ return _cook_class; }
+			get{ return _classify_id; }
 			set
 			{
-				this.OnPropertyValueChange("cook_class");
-				this._cook_class = value;
+				this.OnPropertyValueChange("classify_id");
+				this._classify_id = value;
 			}
 		}
 		/// <summary>
 		/// 
 		/// </summary>
-		[Field("description")]
-		public string description
+		[Field("item_id")]
+		public int item_id
 		{
-			get{ return _description; }
+			get{ return _item_id; }
 			set
 			{
-				this.OnPropertyValueChange("description");
-				this._description = value;
-			}
-		}
-		/// <summary>
-		/// 
-		/// </summary>
-		[Field("name")]
-		public string name
-		{
-			get{ return _name; }
-			set
-			{
-				this.OnPropertyValueChange("name");
-				this._name = value;
-			}
-		}
-		/// <summary>
-		/// 
-		/// </summary>
-		[Field("seq")]
-		public int? seq
-		{
-			get{ return _seq; }
-			set
-			{
-				this.OnPropertyValueChange("seq");
-				this._seq = value;
-			}
-		}
-		/// <summary>
-		/// 
-		/// </summary>
-		[Field("title")]
-		public string title
-		{
-			get{ return _title; }
-			set
-			{
-				this.OnPropertyValueChange("title");
-				this._title = value;
+				this.OnPropertyValueChange("item_id");
+				this._item_id = value;
 			}
 		}
 		/// <summary>
@@ -132,6 +90,13 @@ namespace MatoRecipe_Model.Model
 				_.Id,
 			};
         }
+		/// <summary>
+        /// 获取实体中的标识列
+        /// </summary>
+        public override Field GetIdentityField()
+        {
+            return _.Id;
+        }
         /// <summary>
         /// 获取列信息
         /// </summary>
@@ -139,11 +104,8 @@ namespace MatoRecipe_Model.Model
         {
             return new Field[] {
 				_.Id,
-				_.cook_class,
-				_.description,
-				_.name,
-				_.seq,
-				_.title,
+				_.classify_id,
+				_.item_id,
 				_.create_time,
 			};
         }
@@ -154,11 +116,8 @@ namespace MatoRecipe_Model.Model
         {
             return new object[] {
 				this._Id,
-				this._cook_class,
-				this._description,
-				this._name,
-				this._seq,
-				this._title,
+				this._classify_id,
+				this._item_id,
 				this._create_time,
 			};
         }
@@ -181,35 +140,23 @@ namespace MatoRecipe_Model.Model
 			/// <summary>
 			/// * 
 			/// </summary>
-			public readonly static Field All = new Field("*", "cook_classify");
+			public readonly static Field All = new Field("*", "show_item_classify");
             /// <summary>
 			/// 
 			/// </summary>
-			public readonly static Field Id = new Field("Id", "cook_classify", "");
+			public readonly static Field Id = new Field("Id", "show_item_classify", "");
             /// <summary>
 			/// 
 			/// </summary>
-			public readonly static Field cook_class = new Field("cook_class", "cook_classify", "");
+			public readonly static Field classify_id = new Field("classify_id", "show_item_classify", "");
             /// <summary>
 			/// 
 			/// </summary>
-			public readonly static Field description = new Field("description", "cook_classify", "");
+			public readonly static Field item_id = new Field("item_id", "show_item_classify", "");
             /// <summary>
 			/// 
 			/// </summary>
-			public readonly static Field name = new Field("name", "cook_classify", "");
-            /// <summary>
-			/// 
-			/// </summary>
-			public readonly static Field seq = new Field("seq", "cook_classify", "");
-            /// <summary>
-			/// 
-			/// </summary>
-			public readonly static Field title = new Field("title", "cook_classify", "");
-            /// <summary>
-			/// 
-			/// </summary>
-			public readonly static Field create_time = new Field("create_time", "cook_classify", "");
+			public readonly static Field create_time = new Field("create_time", "show_item_classify", "");
         }
         #endregion
 	}

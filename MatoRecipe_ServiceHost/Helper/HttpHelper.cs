@@ -62,20 +62,7 @@ namespace MatoRecipe_Generator.Helper
         {
             Uri uri = new Uri(url);
             HttpClient httpClient = new HttpClient();
-            var taskresult = httpClient.GetStringAsync(uri);
-            var result = await taskresult;
-            int i = 0;
-            while (i < 300 && !taskresult.IsCompleted)
-            {
-                Thread.Sleep(1);
-                i++;
-            }
-            if (!taskresult.IsCompleted)
-            {
-                httpClient.CancelPendingRequests();
-                Console.WriteLine("请求{0}超时，正在退出网络请求", url);
-            }
-            taskresult.Wait();
+            var result = await httpClient.GetStringAsync(uri);       
             return result;
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using MatoRecipe_Generator.Session;
 
@@ -9,49 +10,86 @@ namespace MatoRecipe_Generator
     {
 
         public static readonly string DB = "数据库操作";
-        public static readonly string Get = "Get请求";
+        public static readonly string Data = "数据获取操作";
+        public static readonly string CleanDB = "清空数据库";
 
         public static readonly string Succ = "成功";
         public static readonly string Err = "失败";
         public ProcessResult()
         {
-            Log = new List<ProcessResultItem>();
         }
-        public List<ProcessResultItem> Log { get; set; }
-        public string ExtMsg { get; set; }
+        public object ExtMsg { get; set; }
         public bool IsSuccess { get; set; }
 
         public void Add(ProcessResultItem item)
         {
-            this.Log.Add(item);
-            Console.WriteLine(string.Format("{0} \t {1} \t 更改数量{2}", item.Title, item.Content, item.Count));
-            LogSession.Log.Add(item);
+            Console.WriteLine(Format(item));
+            Record(item);
         }
 
-        public string Show()
+        private void Record(ProcessResultItem item)
         {
-            StringBuilder result = new StringBuilder();
-            foreach (var item in Log)
+            LogSession.Log.Add(item);
+            try
             {
-                result.AppendLine(string.Format("{0} \t {1} \t 更改数量{2}", item.Title, item.Content, item.Count));
+
+                var path = string.Format("D:\\MainLog{0}.{1}", DateTime.Now.ToString("yy-MM-dd"), "txt");
+                File.AppendAllLines(path,
+                    new List<string>() { Format(item) });
             }
-            return result.ToString();
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+
+        }
+
+        public void Add(string content, ProcessResultType result, string response = "NullorEmpty", string[] param = null)
+        {
+            var item = new ProcessResultItem(response, param ?? new string[] { "没有参数" }, content, result);
+            Console.WriteLine(Format(item));
+            Record(item);
+        }
+        private string Format(ProcessResultItem item)
+        {
+            return string.Format("活动：{0} \t 参数：{1} \t 返回值：{2} \t 结果：{3} \t 时间：{4}", item.Content, GetStr(item.Param), item.Response, item.Result, DateTime.Now.ToString("u"));
+        }
+
+        private string GetStr(string[] param)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var item
+                in param)
+            {
+                sb.Append(item);
+                sb.Append("\t");
+            }
+            return sb.ToString();
         }
     }
 
+
     public class ProcessResultItem
     {
-        public ProcessResultItem(int count, string title, string content)
+        public ProcessResultItem(string response, string[] param, string content, ProcessResultType result)
         {
-            this.Count = count;
+            this.Response = response;
             this.Content = content;
-            this.Title = title;
+            this.Param = param;
+            this.Result = result;
 
         }
 
-        public string Title { get; set; }
+        public string[] Param { get; set; }
         public string Content { get; set; }
-        public int Count { get; set; }
+        public string Response { get; set; }
+        public ProcessResultType Result { get; set; }
+    }
+
+    public enum ProcessResultType
+    {
+        成功, 失败
     }
 
 }

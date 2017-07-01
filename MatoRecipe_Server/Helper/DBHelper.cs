@@ -9,6 +9,6 @@ namespace MatoRecipe_Server.Helper
 {
     public class DBHelper
     {
-        public static readonly DbSession Context = new DbSession("DosConn");
+        public static readonly DbSession Context = new DbSession("DosConnLocal");
     }
 }

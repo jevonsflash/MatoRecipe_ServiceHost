@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Dos.ORM;
 using MatoRecipe_Generator.Helper;
@@ -20,12 +21,23 @@ namespace MatoRecipe_Generator
 
         public void Start()
         {
+            int i = 0;
+          //  var result = GetCookShowItem();
+            var result = GetShowItemClassify();
             //var result = GetCookClassify();
-            var result = GetCookShowItemClassifyId();
-
+            while (!result.IsCompleted)
+            {
+                Thread.Sleep(1000);
+                i++;
+            }
+            Console.WriteLine("进程执行完成");
+            Console.WriteLine("总耗时{0}秒", i);
 
         }
-
+        /// <summary>
+        /// 获取菜谱分类
+        /// </summary>
+        /// <returns></returns>
         public async Task<ProcessResult> GetCookClassify()
         {
 
@@ -33,17 +45,26 @@ namespace MatoRecipe_Generator
 
 
             var clearresult = DBHelper.Context.DeleteAll<cook_classify>();
-            processresult.Add(new ProcessResultItem(clearresult, ProcessResult.DB, ProcessResult.Succ));
-
-            var data = await recipeServer.GetCookClassify();
-            if (data.Status)
+            processresult.Add(ProcessResult.CleanDB, ProcessResultType.成功, clearresult.ToString(), new[] { "cook_classify" });
+            CookClassifyEntity data = null;
+            try
             {
-                processresult.Add(new ProcessResultItem(data.Tngou.Count, ProcessResult.Get, ProcessResult.Succ));
+                data = await recipeServer.GetCookClassify();
+
+            }
+            catch (Exception e)
+            {
+                processresult.Add("一级分类数据获取或解析", ProcessResultType.失败, e.Message);
+
+            }
+            if (data != null && data.Status)
+            {
+                processresult.Add("一级分类数据验证", ProcessResultType.成功);
 
             }
             else
             {
-                processresult.Add(new ProcessResultItem(0, ProcessResult.Get, ProcessResult.Err));
+                processresult.Add("一级分类数据验证", ProcessResultType.失败);
 
                 return processresult;
             }
@@ -52,7 +73,6 @@ namespace MatoRecipe_Generator
                 Id = c.Id,
                 cook_class = c.Cookclass,
                 description = c.Description,
-                keywords = c.Keywords,
                 name = c.Name,
                 seq = 0,
                 title = c.Title,
@@ -61,31 +81,42 @@ namespace MatoRecipe_Generator
             try
             {
                 var result = DBHelper.Context.Insert(datamodel);
-                processresult.Add(new ProcessResultItem(result, "插入父类数据", ProcessResult.Succ));
+                processresult.Add("一级分类数插入", ProcessResultType.成功, result.ToString());
 
             }
             catch (Exception e)
             {
-                processresult.Add(new ProcessResultItem(0, "插入父类数据", e.Message));
+                processresult.Add("一级分类数插入", ProcessResultType.失败, e.Message);
                 return processresult;
             }
 
             var topClassCookClassify = DBHelper.Context.From<cook_classify>().Where(c => c.cook_class == 0).ToList();
             if (topClassCookClassify != null && topClassCookClassify.Count > 0)
             {
-                processresult.Add(new ProcessResultItem(topClassCookClassify.Count, ProcessResult.DB, ProcessResult.Succ));
+                processresult.Add("二级分类读取", ProcessResultType.成功, topClassCookClassify.Count.ToString());
 
                 foreach (var item in topClassCookClassify)
                 {
-                    var subdata = await recipeServer.GetCookClassify(item.Id.ToString());
-                    if (subdata.Status)
+                    CookClassifyEntity subdata = null;
+                    try
                     {
-                        processresult.Add(new ProcessResultItem(subdata.Tngou.Count, ProcessResult.Get, ProcessResult.Succ));
+                        subdata = await recipeServer.GetCookClassify(item.Id.ToString());
+
+                    }
+                    catch (Exception e)
+                    {
+                        processresult.Add("二级分类获取或解析", ProcessResultType.失败, e.Message);
+
+
+                    }
+                    if (subdata != null && subdata.Status)
+                    {
+                        processresult.Add("二级分类数据验证", ProcessResultType.成功);
 
                     }
                     else
                     {
-                        processresult.Add(new ProcessResultItem(0, ProcessResult.Get, ProcessResult.Err));
+                        processresult.Add("二级分类数据验证", ProcessResultType.失败);
 
                         continue;
                     }
@@ -94,7 +125,6 @@ namespace MatoRecipe_Generator
                         Id = c.Id,
                         cook_class = c.Cookclass,
                         description = c.Description,
-                        keywords = c.Keywords,
                         name = c.Name,
                         seq = 1,
                         title = c.Title,
@@ -103,12 +133,12 @@ namespace MatoRecipe_Generator
                     try
                     {
                         var result = DBHelper.Context.Insert(subdatamodel);
-                        processresult.Add(new ProcessResultItem(result, "插入子类数据", ProcessResult.Succ));
+                        processresult.Add("二级分类数插入", ProcessResultType.成功, result.ToString(), new string[] { "当前分类" + item.Id });
 
                     }
                     catch (Exception e)
                     {
-                        processresult.Add(new ProcessResultItem(0, "插入子类数据", e.Message));
+                        processresult.Add("二级分类数插入", ProcessResultType.失败, e.Message, new string[] { "当前分类" + item.Id });
                         continue;
                     }
                 }
@@ -116,12 +146,16 @@ namespace MatoRecipe_Generator
             }
             else
             {
-                processresult.Add(new ProcessResultItem(0, ProcessResult.DB, ProcessResult.Err));
+                processresult.Add("二级分类读取", ProcessResultType.失败, "没找到二级分类数据");
 
             }
             return processresult;
         }
 
+        /// <summary>
+        /// 获取菜谱列表
+        /// </summary>
+        /// <returns></returns>
         public async Task<ProcessResult> GetCookShowItem()
         {
 
@@ -129,32 +163,46 @@ namespace MatoRecipe_Generator
 
 
             var clearresult = DBHelper.Context.DeleteAll<cook_show_item>();
-            processresult.Add(new ProcessResultItem(clearresult, ProcessResult.DB, ProcessResult.Succ));
-
+            processresult.Add(ProcessResult.CleanDB, ProcessResultType.成功, clearresult.ToString(), new[] { "cook_show_item" });
+            int flag = 0;
             for (int i = 1; i < int.MaxValue; i++)
             {
 
+                CookListEntity data = null;
+                try
+                {
+                    data = await recipeServer.GetCookListByPage(i.ToString());
 
-                var data = await recipeServer.GetCookListByPage(i.ToString());
-                if (data.Status)
+                }
+                catch (Exception e)
+                {
+                    processresult.Add("菜谱列表获取或解析", ProcessResultType.失败, e.Message, new string[] { "当前页" + i });
+
+                }
+                if (data != null && data.Status)
                 {
                     if (data.Tngou.Count == 0)
                     {
-                        break;
+                        processresult.Add("菜谱列表数据验证", ProcessResultType.成功, "无数据表明已经结束", new string[] { "当前页" + i });
+                        if (flag > 5)
+                        {
+                            break;
+                        }
+                        flag++;
+                        continue;
                     }
-                    processresult.Add(new ProcessResultItem(data.Tngou.Count, "请求菜谱数据，当前页码" + i, ProcessResult.Succ));
+                    processresult.Add("菜谱列表数据验证", ProcessResultType.成功, data.Tngou.Count().ToString(), new string[] { "当前页" + i });
 
                 }
                 else
                 {
-                    processresult.Add(new ProcessResultItem(0, ProcessResult.Get, ProcessResult.Err));
+                    processresult.Add("菜谱列表数据验证", ProcessResultType.失败, "返回数据状态为Flase", new string[] { "当前页" + i });
 
                     continue;
                 }
                 var datamodel = data.Tngou.Select(c => new cook_show_item()
                 {
                     Id = c.Id,
-                    classify_id = 237,
                     count = c.Count,
                     //description = c.Description,
                     fcount = c.Fcount,
@@ -167,12 +215,12 @@ namespace MatoRecipe_Generator
                 try
                 {
                     var result = DBHelper.Context.Insert(datamodel);
-                    processresult.Add(new ProcessResultItem(result, "菜谱数据插入DB，当前页码" + i, ProcessResult.Succ));
+                    processresult.Add("菜谱数据插入", ProcessResultType.成功, result.ToString(), new string[] { "当前页" + i });
 
                 }
                 catch (Exception e)
                 {
-                    processresult.Add(new ProcessResultItem(0, "菜谱数据插入DB，当前页码" + i, e.Message));
+                    processresult.Add("菜谱数据插入", ProcessResultType.失败, e.Message, param: new string[] { "当前页" + i });
                     continue;
                 }
             }
@@ -181,10 +229,17 @@ namespace MatoRecipe_Generator
 
             return processresult;
         }
-        public async Task<ProcessResult> GetCookShowItemClassifyId()
+
+        /// <summary>
+        /// 获取各个菜谱的分类并更新列表
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ProcessResult> GetShowItemClassify()
         {
 
             var processresult = new ProcessResult();
+            var clearresult = DBHelper.Context.DeleteAll<show_item_classify>();
+            processresult.Add(ProcessResult.CleanDB, ProcessResultType.成功, clearresult.ToString(), new[] { "show_item_classify" });
 
             var subClassify = DBHelper.Context.From<cook_classify>().Where(c => c.seq == 1).ToList();
 
@@ -193,46 +248,51 @@ namespace MatoRecipe_Generator
                 for (int i = 1; i < int.MaxValue; i++)
                 {
 
+                    CookListEntity data = null;
+                    try
+                    {
+                        data = await recipeServer.GetCookListById(i.ToString(), item.Id.ToString());
 
-                    var data = await recipeServer.GetCookListById(i.ToString(), item.Id.ToString());
-                    if (data.Status)
+                    }
+                    catch (Exception e)
+                    {
+                        processresult.Add("菜谱列表获取或解析", ProcessResultType.失败, e.Message, new string[] { "当前子类" + item.Id, "当前页" + i });
+
+                    }
+
+                    if (data != null && data.Status)
                     {
                         if (data.Tngou.Count == 0)
                         {
+                            processresult.Add("菜谱列表数据验证", ProcessResultType.成功, "无数据表明已经结束", new string[] { "当前子类" + item.Id, "当前页" + i });
+
                             break;
                         }
-                        processresult.Add(new ProcessResultItem(data.Tngou.Count, "请求菜谱数据，当前类型" + item.Id + "，当前页码" + i, ProcessResult.Succ));
+                        processresult.Add("菜谱列表数据验证", ProcessResultType.成功, data.Tngou.Count().ToString(), new string[] { "当前子类" + item.Id, "当前页" + i });
 
                     }
                     else
                     {
-                        processresult.Add(new ProcessResultItem(0, ProcessResult.Get, ProcessResult.Err));
+                        processresult.Add("菜谱列表数据验证", ProcessResultType.失败, "返回数据状态为Flase", new string[] { "当前子类" + item.Id, "当前页" + i });
 
                         continue;
                     }
-                    var datamodel = data.Tngou.Select(c => new cook_show_item()
+                    var datamodel = data.Tngou.Select(c => new show_item_classify()
                     {
-                        Id = c.Id,
-                        classify_id = item.Id,
-                        count = c.Count,
-                        //description = c.Description,
-                        fcount = c.Fcount,
-                        food = c.Food,
-                        img = c.Img,
-                        name = c.Name,
-                        rcount = c.Rcount
+                        item_id = c.Id,
+                        classify_id = item.Id
 
                     }).ToList();
 
                     try
                     {
-                        var result = DBHelper.Context.Update(datamodel);
-                        processresult.Add(new ProcessResultItem(result, "菜谱数据插入DB，当前类型" + item.Id, ProcessResult.Succ));
+                        var result = DBHelper.Context.Insert(datamodel);
+                        processresult.Add("菜谱_类型数据插入", ProcessResultType.成功, result.ToString(), new string[] { "当前子类" + item.Id, "当前页" + i });
 
                     }
                     catch (Exception e)
                     {
-                        processresult.Add(new ProcessResultItem(0, "菜谱数据插入DB，当前类型" + item.Id, e.Message));
+                        processresult.Add("菜谱_类型数据插入", ProcessResultType.失败, e.Message, new string[] { "当前子类" + item.Id, "当前页" + i });
                         continue;
                     }
 

@@ -24,7 +24,6 @@ namespace MatoRecipe_Server.Controllers
                 {
                     Id = c.Id,
                     Count = c.count ?? 0,
-                    Description = c.description,
                     Fcount = c.fcount ?? 0,
                     Food = c.food,
                     Img = c.img,

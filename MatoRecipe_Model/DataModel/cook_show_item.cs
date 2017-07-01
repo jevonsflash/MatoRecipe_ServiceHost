@@ -22,14 +22,13 @@ namespace MatoRecipe_Model.Model
     {
         #region Model
 		private int _Id;
-		private int _classify_id;
 		private int? _count;
-		private string _description;
 		private int? _fcount;
 		private string _food;
 		private string _img;
 		private string _name;
 		private int? _rcount;
+		private DateTime _create_time;
 
 		/// <summary>
 		/// 
@@ -47,19 +46,6 @@ namespace MatoRecipe_Model.Model
 		/// <summary>
 		/// 
 		/// </summary>
-		[Field("classify_id")]
-		public int classify_id
-		{
-			get{ return _classify_id; }
-			set
-			{
-				this.OnPropertyValueChange("classify_id");
-				this._classify_id = value;
-			}
-		}
-		/// <summary>
-		/// 
-		/// </summary>
 		[Field("count")]
 		public int? count
 		{
@@ -68,19 +54,6 @@ namespace MatoRecipe_Model.Model
 			{
 				this.OnPropertyValueChange("count");
 				this._count = value;
-			}
-		}
-		/// <summary>
-		/// 
-		/// </summary>
-		[Field("description")]
-		public string description
-		{
-			get{ return _description; }
-			set
-			{
-				this.OnPropertyValueChange("description");
-				this._description = value;
 			}
 		}
 		/// <summary>
@@ -148,6 +121,19 @@ namespace MatoRecipe_Model.Model
 				this._rcount = value;
 			}
 		}
+		/// <summary>
+		/// 
+		/// </summary>
+		[Field("create_time")]
+		public DateTime create_time
+		{
+			get{ return _create_time; }
+			set
+			{
+				this.OnPropertyValueChange("create_time");
+				this._create_time = value;
+			}
+		}
 		#endregion
 
 		#region Method
@@ -167,14 +153,13 @@ namespace MatoRecipe_Model.Model
         {
             return new Field[] {
 				_.Id,
-				_.classify_id,
 				_.count,
-				_.description,
 				_.fcount,
 				_.food,
 				_.img,
 				_.name,
 				_.rcount,
+				_.create_time,
 			};
         }
         /// <summary>
@@ -184,14 +169,13 @@ namespace MatoRecipe_Model.Model
         {
             return new object[] {
 				this._Id,
-				this._classify_id,
 				this._count,
-				this._description,
 				this._fcount,
 				this._food,
 				this._img,
 				this._name,
 				this._rcount,
+				this._create_time,
 			};
         }
         /// <summary>
@@ -221,15 +205,7 @@ namespace MatoRecipe_Model.Model
             /// <summary>
 			/// 
 			/// </summary>
-			public readonly static Field classify_id = new Field("classify_id", "cook_show_item", "");
-            /// <summary>
-			/// 
-			/// </summary>
 			public readonly static Field count = new Field("count", "cook_show_item", "");
-            /// <summary>
-			/// 
-			/// </summary>
-			public readonly static Field description = new Field("description", "cook_show_item", "");
             /// <summary>
 			/// 
 			/// </summary>
@@ -250,6 +226,10 @@ namespace MatoRecipe_Model.Model
 			/// 
 			/// </summary>
 			public readonly static Field rcount = new Field("rcount", "cook_show_item", "");
+            /// <summary>
+			/// 
+			/// </summary>
+			public readonly static Field create_time = new Field("create_time", "cook_show_item", "");
         }
         #endregion
 	}
