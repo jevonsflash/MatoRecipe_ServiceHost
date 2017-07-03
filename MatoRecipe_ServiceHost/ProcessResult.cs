@@ -17,7 +17,9 @@ namespace MatoRecipe_Generator
         public static readonly string Err = "失败";
         public ProcessResult()
         {
+            Log = new List<ProcessResultItem>();
         }
+        public List<ProcessResultItem> Log { get; set; }
         public object ExtMsg { get; set; }
         public bool IsSuccess { get; set; }
 
@@ -30,6 +32,7 @@ namespace MatoRecipe_Generator
         private void Record(ProcessResultItem item)
         {
             LogSession.Log.Add(item);
+            Log.Add(item);
             try
             {
 
