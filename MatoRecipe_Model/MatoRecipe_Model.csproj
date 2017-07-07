@@ -50,13 +50,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class1.cs" />
+    <Compile Include="DataModel\cook_2_cook_classify.cs" />
+    <Compile Include="DataModel\cook_2_food.cs" />
     <Compile Include="DataModel\cook_classify.cs" />
+    <Compile Include="DataModel\cook_detail.cs" />
     <Compile Include="DataModel\cook_show_item.cs" />
-    <Compile Include="DataModel\show_item_classify.cs" />
+    <Compile Include="DataModel\food_detail.cs" />
+    <Compile Include="DataModel\food_show_item.cs" />
     <Compile Include="Model\CookClassifyEntity.cs" />
     <Compile Include="Model\CookDetailEntity.cs" />
-    <Compile Include="Model\CookShowItemEntity.cs" />
+    <Compile Include="Model\CookListEntity.cs" />
     <Compile Include="Model\FoodDetailEntity.cs" />
+    <Compile Include="Model\FoodListEntity.cs" />
     <Compile Include="Model\RequestData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

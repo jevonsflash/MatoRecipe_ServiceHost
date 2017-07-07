@@ -12,6 +12,8 @@
         public static string CookShow = "http://www.tngou.net/api/cook/show";
 
         public static string FoodByName = "http://www.tngou.net/api/food/name";
+        public static string FoodList = "http://www.tngou.net/api/food/list";
+        public static string FoodShow = "http://www.tngou.net/api/food/show";
 
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using MatoRecipe.Helper;
@@ -34,7 +35,16 @@ namespace MatoRecipe_Generator.Server
             return result;
         }
 
-
+        public async Task<FoodListEntity> GetFoodListByPage(string parameter)
+        {
+            var result = new FoodListEntity();
+            string url = StaticURLHelper.FoodList;
+            Dictionary<string, string> dic = new Dictionary<string, string>();
+            dic.Add("page", parameter);
+            var jsonstr = await GetJSON(url, dic);
+            result = JsonConvert.DeserializeObject<FoodListEntity>(jsonstr);
+            return result;
+        }
         public async Task<CookListEntity> GetCookListById(string page, string id)
         {
             var result = new CookListEntity();
@@ -44,6 +54,18 @@ namespace MatoRecipe_Generator.Server
             dic.Add("id", id);
             var jsonstr = await GetJSON(url, dic);
             result = JsonConvert.DeserializeObject<CookListEntity>(jsonstr);
+            return result;
+        }
+
+        public async Task<FoodListEntity> GetFoodListById(string page, string id)
+        {
+            var result = new FoodListEntity();
+            string url = StaticURLHelper.FoodList;
+            Dictionary<string, string> dic = new Dictionary<string, string>();
+            dic.Add("page", page);
+            dic.Add("id", id);
+            var jsonstr = await GetJSON(url, dic);
+            result = JsonConvert.DeserializeObject<FoodListEntity>(jsonstr);
             return result;
         }
 
@@ -92,6 +114,17 @@ namespace MatoRecipe_Generator.Server
             return result;
         }
 
+        public async Task<FoodDetailEntity> GetFoodDetail(string parameter)
+        {
+            var result = new FoodDetailEntity();
+            string url = StaticURLHelper.FoodShow;
+            Dictionary<string, string> dic = new Dictionary<string, string>();
+            dic.Add("id", parameter);
+            var jsonstr = await GetJSON(url, dic);
+            result = JsonConvert.DeserializeObject<FoodDetailEntity>(jsonstr);
+            return result;
+        }
+
         private async Task<string> GetJSON(string url, Dictionary<string, string> parameters)
         {
             string postString = url;
@@ -118,5 +151,6 @@ namespace MatoRecipe_Generator.Server
 
             return resposeString;
         }
+
     }
 }

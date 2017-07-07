@@ -14,11 +14,11 @@ using Dos.ORM;
 namespace MatoRecipe_Model.Model
 {
     /// <summary>
-    /// 实体类show_item_classify。(属性说明自动提取数据库字段的描述信息)
+    /// 实体类cook_2_cook_classify。(属性说明自动提取数据库字段的描述信息)
     /// </summary>
-    [Table("show_item_classify")]
+    [Table("cook_2_cook_classify")]
     [Serializable]
-    public partial class show_item_classify : Entity
+    public partial class cook_2_cook_classify : Entity
     {
         #region Model
 		private int _Id;
@@ -140,23 +140,23 @@ namespace MatoRecipe_Model.Model
 			/// <summary>
 			/// * 
 			/// </summary>
-			public readonly static Field All = new Field("*", "show_item_classify");
+			public readonly static Field All = new Field("*", "cook_2_cook_classify");
             /// <summary>
 			/// 
 			/// </summary>
-			public readonly static Field Id = new Field("Id", "show_item_classify", "");
+			public readonly static Field Id = new Field("Id", "cook_2_cook_classify", "");
             /// <summary>
 			/// 
 			/// </summary>
-			public readonly static Field classify_id = new Field("classify_id", "show_item_classify", "");
+			public readonly static Field classify_id = new Field("classify_id", "cook_2_cook_classify", "");
             /// <summary>
 			/// 
 			/// </summary>
-			public readonly static Field item_id = new Field("item_id", "show_item_classify", "");
+			public readonly static Field item_id = new Field("item_id", "cook_2_cook_classify", "");
             /// <summary>
 			/// 
 			/// </summary>
-			public readonly static Field create_time = new Field("create_time", "show_item_classify", "");
+			public readonly static Field create_time = new Field("create_time", "cook_2_cook_classify", "");
         }
         #endregion
 	}

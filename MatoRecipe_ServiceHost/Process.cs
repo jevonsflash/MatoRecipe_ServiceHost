@@ -16,10 +16,35 @@ namespace MatoRecipe_Generator
         RecipeServer recipeServer = new RecipeServer();
         public Process()
         {
-
         }
 
         public void Start()
+        {
+
+
+            int i = 0;
+            var maintask = GetCookDetail();
+            while (!maintask.IsCompleted)
+            {
+                Thread.Sleep(1000);
+                i++;
+            }
+            Console.WriteLine("第一进程执行完毕");
+            Console.WriteLine("总耗时{0}秒", i);
+            i = 0;
+            var subtask = GetFoodDetail();
+
+            while (!subtask.IsCompleted)
+            {
+                Thread.Sleep(1000);
+                i++;
+            }
+            Console.WriteLine("第二进程执行完毕");
+            Console.WriteLine("总耗时{0}秒", i);
+
+        }
+
+        private void Process1()
         {
             Console.WriteLine("主进程开始");
 
@@ -38,9 +63,7 @@ namespace MatoRecipe_Generator
             var mainResult = maintask.Result;
             var errorResult = mainResult.Log.Where(c => c.Result == ProcessResultType.失败);
 
-            //var errorResult1=new ProcessResult();
-            //errorResult1.Add("补取菜谱列表获取或解析", ProcessResultType.失败, "测试用", new string[] { "当前页" + "1456" });
-            //var errorResult = errorResult1.Log;
+
             var reprocessPageIndex = errorResult.Select(c => c.Param[0].Substring(3)).ToList();
             var retask = ReGetCookList(reprocessPageIndex);
             while (!retask.IsCompleted)
@@ -52,10 +75,9 @@ namespace MatoRecipe_Generator
             Console.WriteLine("总耗时{0}秒", i);
 
 
-
-            var aa= GetShowItemClassify();
-
+            var aa = GetShowItemClassify();
         }
+
 
 
         /// <summary>
@@ -230,7 +252,7 @@ namespace MatoRecipe_Generator
                     count = c.Count,
                     //description = c.Description,
                     fcount = c.Fcount,
-                    food = c.Food,
+                    food = GetShortStr(c.Food, 299),
                     img = c.Img,
                     name = c.Name,
                     rcount = c.Rcount
@@ -262,7 +284,7 @@ namespace MatoRecipe_Generator
         {
 
             var processresult = new ProcessResult();
-            var clearresult = DBHelper.Context.DeleteAll<show_item_classify>();
+            var clearresult = DBHelper.Context.DeleteAll<cook_2_cook_classify>();
             processresult.Add(ProcessResult.CleanDB, ProcessResultType.成功, clearresult.ToString(), new[] { "show_item_classify" });
 
             var subClassify = DBHelper.Context.From<cook_classify>().Where(c => c.seq == 1).ToList();
@@ -301,7 +323,7 @@ namespace MatoRecipe_Generator
 
                         continue;
                     }
-                    var datamodel = data.Tngou.Select(c => new show_item_classify()
+                    var datamodel = data.Tngou.Select(c => new cook_2_cook_classify()
                     {
                         item_id = c.Id,
                         classify_id = item.Id
@@ -367,7 +389,7 @@ namespace MatoRecipe_Generator
                     count = c.Count,
                     //description = c.Description,
                     fcount = c.Fcount,
-                    food = c.Food,
+                    food = GetShortStr(c.Food, 299),
                     img = c.Img,
                     name = c.Name,
                     rcount = c.Rcount
@@ -394,6 +416,255 @@ namespace MatoRecipe_Generator
 
             }
             return processresult;
+        }
+
+        /// <summary>
+        /// 获取菜谱详细
+        /// </summary>
+        /// <returns></returns>
+        private async Task<ProcessResult> GetCookDetail()
+        {
+            var processresult = new ProcessResult();
+
+            var clearresult = DBHelper.Context.DeleteAll<cook_detail>();
+            processresult.Add(ProcessResult.CleanDB, ProcessResultType.成功, clearresult.ToString(), new[] { "cook_detail" });
+
+
+            List<int> data = new List<int>();
+            try
+            {
+                data = DBHelper.Context.From<cook_show_item>().Select(c => c.Id).ToList<int>();
+
+            }
+            catch (Exception e)
+            {
+                processresult.Add("菜谱列表获取或解析", ProcessResultType.失败, e.Message);
+            }
+
+            foreach (var item in data)
+            {
+                CookDetailEntity c = null;
+                try
+                {
+                    c = await recipeServer.GetCookDetail(item.ToString());
+
+                }
+                catch (Exception e)
+                {
+                    processresult.Add("菜谱详情获取或解析", ProcessResultType.失败, e.Message, new string[] { "当前页" + item });
+                    continue;
+                }
+                if (c == null || c.Status == false)
+                {
+                    processresult.Add("菜谱详情数据验证", ProcessResultType.失败, null, new string[] { "当前页" + item });
+                    continue;
+                }
+                var datamodel = new cook_detail()
+                {
+                    cook_id = c.Id,
+                    count = c.Count,
+                    //description = c.Description,
+                    fcount = c.Fcount,
+                    food = GetShortStr(c.Food, 299),
+                    img = c.Img,
+                    message = c.Message,
+                    name = c.Name,
+                    rcount = c.Rcount
+
+                };
+
+                try
+                {
+                    var result = DBHelper.Context.Insert(datamodel);
+                    processresult.Add("菜谱详情数据插入", ProcessResultType.成功, result.ToString(), new string[] { "当前ID" + item });
+
+                }
+                catch (Exception e)
+                {
+                    processresult.Add("菜谱详情数据插入", ProcessResultType.失败, e.Message, param: new string[] { "当前ID" + item });
+                }
+            }
+
+            return new ProcessResult();
+
+        }
+
+        /// <summary>
+        /// 获取食物列表
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ProcessResult> GetFoodShowItem()
+        {
+
+            var processresult = new ProcessResult();
+
+
+            var clearresult = DBHelper.Context.DeleteAll<food_show_item>();
+            processresult.Add(ProcessResult.CleanDB, ProcessResultType.成功, clearresult.ToString(), new[] { "food_show_item" });
+            int flag = 0;
+            for (int i = 1; i < int.MaxValue; i++)
+            {
+
+                FoodListEntity data = null;
+                try
+                {
+                    data = await recipeServer.GetFoodListByPage(i.ToString());
+
+                }
+                catch (Exception e)
+                {
+                    processresult.Add("食物列表获取或解析", ProcessResultType.失败, e.Message, new string[] { "当前页" + i });
+                    continue;
+                }
+                if (data != null && data.Status)
+                {
+                    if (data.Tngou.Count == 0)
+                    {
+                        processresult.Add("食物列表数据验证", ProcessResultType.成功, "无数据表明已经结束", new string[] { "当前页" + i });
+                        if (flag > 5)
+                        {
+                            break;
+                        }
+                        flag++;
+                        continue;
+                    }
+                    processresult.Add("食物列表数据验证", ProcessResultType.成功, data.Tngou.Count().ToString(), new string[] { "当前页" + i });
+
+                }
+                else
+                {
+                    processresult.Add("食物列表数据验证", ProcessResultType.失败, "返回数据状态为Flase", new string[] { "当前页" + i });
+
+                    continue;
+                }
+                var datamodel = data.Tngou.Select(c => new food_show_item()
+                {
+                    Id = c.Id,
+                    count = c.Count,
+                    description = c.Description,
+                    disease = GetShortStr(c.Disease, 299),
+                    fcount = c.Fcount,
+                    food = c.Food,
+                    img = c.Img,
+                    name = c.Name,
+                    rcount = c.Rcount,
+                    summary = c.Summary,
+
+                }).ToList();
+                try
+                {
+                    var result = DBHelper.Context.Insert(datamodel);
+                    processresult.Add("食物数据插入", ProcessResultType.成功, result.ToString(), new string[] { "当前页" + i });
+
+                }
+                catch (Exception e)
+                {
+                    processresult.Add("食物数据插入", ProcessResultType.失败, e.Message, param: new string[] { "当前页" + i });
+                    continue;
+                }
+            }
+
+
+
+            return processresult;
+        }
+
+
+        /// <summary>
+        /// 获取菜谱详细
+        /// </summary>
+        /// <returns></returns>
+        private async Task<ProcessResult> GetFoodDetail()
+        {
+            var processresult = new ProcessResult();
+
+            var clearresult = DBHelper.Context.DeleteAll<food_detail>();
+            processresult.Add(ProcessResult.CleanDB, ProcessResultType.成功, clearresult.ToString(), new[] { "food_detail" });
+
+
+            List<int> data = new List<int>();
+            try
+            {
+                data = DBHelper.Context.From<food_show_item>().Select(c => c.Id).ToList<int>();
+
+            }
+            catch (Exception e)
+            {
+                processresult.Add("食物列表获取或解析", ProcessResultType.失败, e.Message);
+            }
+
+            foreach (var item in data)
+            {
+                FoodDetailEntity c = null;
+                try
+                {
+                    c = await recipeServer.GetFoodDetail(item.ToString());
+
+                }
+                catch (Exception e)
+                {
+                    processresult.Add("食物详情获取或解析", ProcessResultType.失败, e.Message, new string[] { "当前页" + item });
+                    continue;
+                }
+                if (c == null || c.Status == false)
+                {
+                    processresult.Add("食物详情数据验证", ProcessResultType.失败, null, new string[] { "当前页" + item });
+                    continue;
+                }
+
+                var datamodel = new food_detail()
+                {
+                    food_id = c.Id,
+                    count = c.Count,
+                    description = c.Description,
+                    fcount = c.Fcount,
+                    food = GetShortStr(c.Food, 299),
+                    img = c.Img,
+                    message = c.Message,
+                    name = c.Name,
+                    rcount = c.Rcount,
+                    status = c.Status,
+                    summary = c.Summary,
+
+
+                };
+
+                try
+                {
+                    var result = DBHelper.Context.Insert(datamodel);
+                    processresult.Add("食物详情数据插入", ProcessResultType.成功, result.ToString(), new string[] { "当前ID" + item });
+
+                }
+                catch (Exception e)
+                {
+                    processresult.Add("食物详情数据插入", ProcessResultType.失败, e.Message, param: new string[] { "当前ID" + item });
+                }
+            }
+
+            return new ProcessResult();
+
+        }
+
+
+        private string GetShortStr(string source, int maxlength)
+        {
+            char sep = ',';
+            string result = "";
+            if (source.Length > maxlength)
+            {
+                var handledstr = source.Substring(0, maxlength);
+                var tempArry = handledstr.Split(sep).ToList();
+                tempArry.RemoveAt(tempArry.Count - 1);
+                result = GetShortStr(string.Join(sep.ToString(), tempArry), maxlength);
+
+            }
+            else
+            {
+                result = source;
+            }
+
+
+            return result;
         }
 
     }
