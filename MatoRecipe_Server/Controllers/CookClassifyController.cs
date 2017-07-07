@@ -23,7 +23,6 @@ namespace MatoRecipe_Server.Controllers
                     Id = c.Id,
                     Cookclass = c.cook_class ?? 0,
                     Description = c.description,
-                    Keywords = c.keywords,
                     Name = c.name,
                     Title = c.title,
                     Seq = c.seq ?? 0,

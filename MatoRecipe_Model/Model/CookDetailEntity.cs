@@ -24,9 +24,6 @@ namespace MatoRecipe_Model.Model
         [JsonProperty("id")]
         public int Id { get; set; }
 
-        [JsonProperty("images")]
-        public string Images { get; set; }
-
         [JsonProperty("img")]
         public string Img { get; set; }
 

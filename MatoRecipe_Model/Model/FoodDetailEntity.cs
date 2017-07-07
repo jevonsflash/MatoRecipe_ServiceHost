@@ -51,8 +51,6 @@ namespace MatoRecipe_Model.Model
         [JsonProperty("symptom")]
         public string Symptom { get; set; }
 
-        [JsonProperty("url")]
-        public string Url { get; set; }
     }
 
 }
